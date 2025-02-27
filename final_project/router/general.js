@@ -28,8 +28,18 @@ public_users.post("/register", (req, res) => {
 
 // Get the book list available in the shop
 public_users.get("/", function (req, res) {
-  res.status(200).json(books);
+  getAllBooks()
+    .then((books) => res.send(books))
+    .catch((err) => console.error(err));
 });
+
+async function getAllBooks() {
+  try {
+    return books;
+  } catch (error) {
+    throw error;
+  }
+}
 
 // Get book details based on ISBN
 public_users.get("/isbn/:isbn", function (req, res) {
@@ -39,6 +49,13 @@ public_users.get("/isbn/:isbn", function (req, res) {
     .then((book) => res.send(book))
     .catch((err) => console.error(err));
 });
+async function getBookByISBN(isbn) {
+  for (let bookName in books) {
+    if (books[bookName].isbn === isbn) {
+      return books[bookName];
+    }
+  }
+}
 
 // Get book details based on author
 public_users.get("/author/:author", function (req, res) {
@@ -49,6 +66,13 @@ public_users.get("/author/:author", function (req, res) {
     .then((book) => res.send(book))
     .catch((err) => console.error(err));
 });
+async function getByAuthor(author) {
+  for (let bookAuth in books) {
+    if (books[bookAuth].author === author) {
+      return books[bookAuth];
+    }
+  }
+}
 
 // Get all books based on title
 public_users.get("/title/:title", function (req, res) {
@@ -58,6 +82,14 @@ public_users.get("/title/:title", function (req, res) {
     .then((book) => res.send(book))
     .catch((err) => console.error(err));
 });
+
+async function getByTitle(title) {
+  for (let bookTitle in books) {
+    if (books[bookTitle].title === title) {
+      return books[bookTitle];
+    }
+  }
+}
 
 //  Get book review
 public_users.get("/review/:isbn", function (req, res) {
@@ -73,36 +105,4 @@ public_users.get("/review/:isbn", function (req, res) {
   return res.status(402).json({ message: "The review is not found" });
 });
 
-async function getAllBooks() {
-  try {
-    const response = await axios.get("http://localhost:5000/");
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getBookByISBN(isbn) {
-  for (let bookName in books) {
-    if (books[bookName].isbn === isbn) {
-      return books[bookName];
-    }
-  }
-}
-
-async function getByAuthor(author) {
-  for (let bookAuth in books) {
-    if (books[bookAuth].author === author) {
-      return books[bookAuth];
-    }
-  }
-}
-
-async function getByTitle(title) {
-  for (let bookTitle in books) {
-    if (books[bookTitle].title === title) {
-      return books[bookTitle];
-    }
-  }
-}
 module.exports.general = public_users;
